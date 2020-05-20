@@ -1,0 +1,14 @@
+{
+  "name": "001_webpack",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack src/main.js -o dist/bundle.js --mode=development"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
