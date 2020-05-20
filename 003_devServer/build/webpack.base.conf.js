@@ -1,5 +1,6 @@
 const path = require('path')
 const utils = require('./utils')
+const config = require('../config')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -8,8 +9,10 @@ function resolve(dir) {
     return path.join(__dirname, '..', dir)
 }
 
-console.log(path.resolve(__dirname, '../'));
-
+const extractSass = new ExtractTextPlugin({
+    filename: "[name].[contenthash].css",
+    disable: process.env.NODE_ENV === "development"
+});
 
 // webapck 配置
 module.exports = {
@@ -18,10 +21,11 @@ module.exports = {
     entry: { script: './src/main.js' },
     // 输出文件
     output: {
-        // 输出文件名
-        filename: 'js/script.js',
         // 输出路径
-        path: resolve(__dirname, 'dist')
+        path: config.build.assetsRoot,
+        // 输出文件名
+        filename: 'js/[name].js',
+        publicPath: process.env.NODE_ENV === 'production' ? config.build.assetsPublicPath : config.dev.assetsPublicPath
     },
     // loader 配置
     module: {
@@ -29,24 +33,14 @@ module.exports = {
             // 样式资源         
             {
                 test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: [
-                        {
-                            loader: "css-loader"
-                        },
-                        {
-                            loader: "postcss-loader"
-                        },
-                        {
-                            loader: "sass-loader",
-                            options: {
-                                sassOptions: {
-                                    outputStyle: 'compressed'
-                                }
-                            }
-                        }
-                    ]
+                use: extractSass.extract({
+                    use: [{
+                        loader: "css-loader"
+                    }, {
+                        loader: "sass-loader"
+                    }],
+                    // 在开发环境使用 style-loader
+                    fallback: "style-loader"
                 })
             },
             // 图片资源
@@ -63,21 +57,30 @@ module.exports = {
                     esModule: false
                 }
             },
+            // 媒体资源
+            {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: utils.assetsPath('media/[name].[hash:7].[ext]')
+                }
+            },
+            // 字体资源
+            {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+                }
+            },
             // HTML 中的图片资源
             {
                 test: /\.html$/,
                 // url-loader 依赖 file-loader 需要安装 file-loader
                 loader: 'html-loader'
-            },
-            // 其他资源
-            // {
-            //     exclude: /\.(css|js|html|jpg|png|gif|scss)$/,
-            //     loader: 'file-loader',
-            //     options: {
-            //         // 资源名字只要 10 位
-            //         name: '[hash:10].[ext]'
-            //     }
-            // }
+            }
         ]
     },
     // 插件配置
