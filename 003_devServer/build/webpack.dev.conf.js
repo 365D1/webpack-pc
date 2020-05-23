@@ -14,6 +14,8 @@ const PORT = process.env.PORT && Number(process.env.PORT)
 const devWebpackConfig = merge(baseWebpackConfig, {
     // 服务器   
     devServer: {
+        // 警告级别
+        clientLogLevel: "warning",
         // 开启 HMR 热替换
         hot: true,
         contentBase: false,
