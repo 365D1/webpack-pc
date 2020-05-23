@@ -20,7 +20,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         compress: true,
         host: HOST || config.dev.host,
         port: PORT || config.dev.port
-    }
+    },
+    // 模式
+    mode: 'development'
 })
 
 module.exports = new Promise((resolve, reject) => {

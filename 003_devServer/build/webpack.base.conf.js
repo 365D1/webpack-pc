@@ -104,7 +104,5 @@ module.exports = {
     // 优化
     optimization: {
 
-    },
-    // 模式
-    // mode: 'development',    
+    }
 }
